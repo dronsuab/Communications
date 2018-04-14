@@ -143,7 +143,7 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(SERIAL_SPEED);
-  Serial.setTimeout(2);
+  Serial.setTimeout(5);
   int connectionStatus = ConnectWifi(STATIC_IP_OPTION);
   if(connectionStatus == 1){
     digitalWrite(LED_BUILTIN, HIGH);
