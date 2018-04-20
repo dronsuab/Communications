@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt
+import thread
+import sys
 import time
 import re
 import clases as c
@@ -7,6 +9,7 @@ dblueAlives = 0
 dredAlives = 0
 bred = 0
 bblue = 0
+penaltyTime = 10
 winner = ""
 broker = "172.20.10.2"
 #broker = "192.168.1.3"
@@ -58,6 +61,21 @@ def gameOver():
         winner = "RED"
     sendMessage("Ginfo", "Winner team: " + winner)
     print "Winner team: " + winner
+def applyPenaltyTime(side, dhurt):
+    global penaltyTime
+    time.sleep(penaltyTime)
+    if side == "right":
+        dhurt.right = 1
+    elif side == "left":
+        dhurt.left = 1
+    elif side == "forward":
+        dhurt.forward = 1
+    elif side == "backward":
+        dhurt.backward = 1
+
+    tagtosend = "MOVEMENT"
+    msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + "penalty"
+    sendMessage(tagtosend, msgtosend)
 
 def subscribePlayer(message):
     global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue
@@ -138,8 +156,9 @@ def applyProtocol(tag,message):
 
                     #answering
                     tagtosend = "MOVEMENT"
-                    msgtosend = tagtosend + "," + str(dhurt.controller) + "," + side + "," + str(msg[3])
+                    msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + str(msg[3])
                     sendMessage(tagtosend, msgtosend)
+                    thread.start_new_thread(applyPenaltyTime,(side,dhurt))
 
                     tagtosend = "LED"
                     msgtosend = tagtosend + "," + str(dhurt.name) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward)
