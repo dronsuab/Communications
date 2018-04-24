@@ -4,13 +4,14 @@ import sys
 import time
 import re
 import clases as c
+import socket
 initDroneLifes = 4
 dblueAlives = 0
 dredAlives = 0
 bred = 0
 bblue = 0
 penaltyTime = 10
-winner = ""
+winner = "Unknown"
 broker = "172.20.10.2"
 #broker = "192.168.1.3"
 #dic with players
@@ -30,6 +31,7 @@ def on_message(client, userdata, message):
         subscribePlayer(message.payload)
     else:
         applyProtocol(message.topic, message.payload)
+    updateWeb()
 
 def subscribeTags(client,tags):
     for tag in tags:
@@ -43,7 +45,17 @@ def sendMessage(tag, msg):
     clientSender.disconnect()
     clientSender.loop_stop()
 
-
+def updateWeb():
+    try:
+        sock = socket.socket()
+        sock.connect(("localhost", 9999))
+        #msg: dredAlives,dblueAlives,bred, bblue,winner
+        sock_msg = str(dredAlives)+','+str(dblueAlives)+','+str(bred)+','+str(bblue) +','+winner
+        sock.send(sock_msg)
+        print("socket: msg sent")
+        sock.close()
+    except:
+        print("Web page socket not available")
 def gameOver():
     tagtosend = "GOVER"
     msgtosend = "GOVER"
@@ -202,14 +214,6 @@ def applyProtocol(tag,message):
                 sendMessage("Ginfo", "Err: CATCH from a not signed up dron or base")
         else:
             print "invalid message"
-
-#Creating objects
-'''drone1 = c.Drone("drone1", "blue", 4)
-drone2 = c.Drone("drone2", "red", 4)
-controller1 = c.Controller("controller1", drone1, drone1.team, True, True, True, True)
-controller2 = c.Controller("controller2", drone2, drone2.team, True, True, True, True)
-base1 = c.Base("base1", "blue")
-base2 = c.Base("base2", "red")'''
 
 #Connection
 clientServer = mqtt.Client("ClientServer")
