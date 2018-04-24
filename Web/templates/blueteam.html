@@ -42,11 +42,11 @@
             display: block;
         }
         .actual{
-            background-color: #2C3E50;
+            background-color: #2980B9;
             color: white;
         }
         li a:hover{
-            background-color: #2C3E50;
+            background-color: #2980B9;
             color: white;
         }
     </style>
@@ -54,16 +54,13 @@
 <body>
     <header class="main-header"> GAME OF DRONES</header>
     <ul>
-        <li><a class="actual" href="/"> General follow-up</a></li>
+        <li><a href="/"> General follow-up</a></li>
         <li><a href="redteam"> Red team</a></li>
-        <li><a href="blueteam"> Blue team</a></li>
+        <li><a class="actual" href="blueteam"> Blue team</a></li>
         <li><a href="rules"> Rules</a></li>
     </ul>
-    <h1> GENERAL FOLLOW-UP </h1>
-    <p style="color: #A93226"> Red drones alive: {{redDronesAlive}}</p>
-    <p style="color: #A93226"> Red bases conquered: {{redBasesConquered}}</p>
+    <h1> BLUE TEAM FOLLOW-UP </h1>
     <p style="color: #2980B9"> Blue drones alive: {{blueDronesAlive}}</p>
     <p style="color: #2980B9"> Blue bases conquered: {{blueBasesConquered}}</p>
-    <p> WINNER: {{winner}}</p>
 </body>
 </html>

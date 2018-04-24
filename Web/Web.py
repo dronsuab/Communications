@@ -16,6 +16,19 @@ app = Flask(__name__) #new object
 def index():
     global redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner
     return render_template('web.html', redDronesAlive=redDronesAlive.value, blueDronesAlive=blueDronesAlive.value, redBasesConquered = redBasesConquered.value, blueBasesConquered = blueBasesConquered.value, winner = winner.value)
+
+@app.route('/redteam')
+def redteam():
+    global redDronesAlive, redBasesConquered
+    return render_template('redteam.html', redDronesAlive=redDronesAlive.value, redBasesConquered=redBasesConquered.value)
+@app.route('/blueteam')
+def blueteam():
+    global blueDronesAlive, blueBasesConquered
+    return render_template('blueteam.html', blueDronesAlive=blueDronesAlive.value, blueBasesConquered=blueBasesConquered.value)
+@app.route('/rules')
+def rules():
+    return render_template('rules.html')
+
 def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner):
     #socket to comunicate with others
     while(1):
