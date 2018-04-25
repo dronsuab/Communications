@@ -49,6 +49,6 @@ def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesCon
 if __name__ == '__main__':
     p = Process(target=refreshData, args=(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner))
     p.start()
-    app.run(debug=False, port=8000)
+    app.run(host="0.0.0.0", debug=False, port=80)
 
 
