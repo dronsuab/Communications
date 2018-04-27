@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> GAME OF DRONES</title>
+    <link rel="stylesheet" href='style.css' type="text/css">
+    <style>
+        body{
+            background-color:#EAECEE;
+        }
+        h1{
+            padding: 50px;
+        }
+        .main-header{
+        background-color:#2980B9;
+        padding-left:25px;
+        padding-right:25px;
+        padding-top:30px;
+        padding-bottom:30px;
+        color:white;
+        font-size: 300%
+        }
+
+        ul{
+            list-style-type: none;
+            font-size: 18px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            float:left;
+        }
+        p{
+            padding-left: 50px;
+            font-size: 100%;
+        }
+        li a{
+            text-decoration: none;
+            color:#666;
+            padding: 20px;
+            display: block;
+        }
+        .actual{
+            background-color: #2980B9;
+            color: white;
+        }
+        li a:hover{
+            background-color: #5499C7;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header"> GAME OF DRONES</header>
+    <ul>
+        <li><a href="/"> General follow-up</a></li>
+        <li><a href="redteam"> Red team</a></li>
+        <li><a class="actual" href="blueteam"> Blue team</a></li>
+        <li><a href="rules"> Rules</a></li>
+    </ul>
+    <h1> BLUE TEAM FOLLOW-UP </h1>
+    <p style="color: #2980B9"> Blue drones alive: {{blueDronesAlive}}</p>
+    <p style="color: #2980B9"> Blue bases conquered: {{blueBasesConquered}}</p>
+</body>
+</html>

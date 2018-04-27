@@ -12,7 +12,7 @@ bred = 0
 bblue = 0
 penaltyTime = 10
 winner = "Unknown"
-broker = "172.20.10.2"
+broker = "192.168.1.102"
 #broker = "192.168.1.3"
 #dic with players
 dicBase = {}
@@ -31,7 +31,6 @@ def on_message(client, userdata, message):
         subscribePlayer(message.payload)
     else:
         applyProtocol(message.topic, message.payload)
-    updateWeb()
 
 def subscribeTags(client,tags):
     for tag in tags:
@@ -45,12 +44,21 @@ def sendMessage(tag, msg):
     clientSender.disconnect()
     clientSender.loop_stop()
 
-def updateWeb():
+def updateWeb(fdrone, fbase, object):
     try:
         sock = socket.socket()
         sock.connect(("localhost", 9999))
-        #msg: dredAlives,dblueAlives,bred, bblue,winner
-        sock_msg = str(dredAlives)+','+str(dblueAlives)+','+str(bred)+','+str(bblue) +','+winner
+        if fdrone:
+            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, right,
+            #left, forward, backward, lifes, shots, shotsRec, basesCaught
+            sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner + ',' + str(fdrone) \
+                        + ',' + str(fbase) +',' + str(object.name) + ',' + str(object.team) + ',' + str(object.right) \
+                        + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
+                        + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught)
+        elif fbase:
+            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team
+            sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner \
+                       + ',' + str(fdrone) + ',' + str(fbase) + str(object.name) + str(object.team)
         sock.send(sock_msg)
         print("socket: msg sent")
         sock.close()
@@ -73,22 +81,6 @@ def gameOver():
         winner = "RED"
     sendMessage("Ginfo", "Winner team: " + winner)
     print "Winner team: " + winner
-def applyPenaltyTime(side, dhurt):
-    global penaltyTime
-    time.sleep(penaltyTime)
-    if side == "right":
-        dhurt.right = 1
-    elif side == "left":
-        dhurt.left = 1
-    elif side == "forward":
-        dhurt.forward = 1
-    elif side == "backward":
-        dhurt.backward = 1
-
-    tagtosend = "MOVEMENT"
-    msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + "penalty"
-    sendMessage(tagtosend, msgtosend)
-
 def subscribePlayer(message):
     global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue
     msg = message.split(",")
@@ -107,6 +99,7 @@ def subscribePlayer(message):
             if valid:
                 dicBase[msg[0]] = c.Base(msg[0], msg[1])
                 sendMessage("Ginfo", msg[0] + " signed up")
+                updateWeb(0, 1, dicBase[msg[0]])
         else:
             sendMessage("Ginfo", "Err: " + msg[0] + " was already signed up")
 
@@ -139,8 +132,24 @@ def subscribePlayer(message):
             if valid:
                 dicDrone[msg[0]] = c.Drone(msg[0], msg[1], msg[2], 1, 1, 1, 1, initDroneLifes)
                 sendMessage("Ginfo", msg[0] + " signed up")
+                updateWeb(1, 0, dicDrone[msg[0]])
         else:
             sendMessage("Ginfo", "Err: " + msg[0] + " was already signed up")
+def applyPenaltyTime(side, dhurt):
+    global penaltyTime
+    time.sleep(penaltyTime)
+    if side == "right":
+        dhurt.right = 1
+    elif side == "left":
+        dhurt.left = 1
+    elif side == "forward":
+        dhurt.forward = 1
+    elif side == "backward":
+        dhurt.backward = 1
+
+    tagtosend = "MOVEMENT"
+    msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + "penalty"
+    sendMessage(tagtosend, msgtosend)
 def applyProtocol(tag,message):
     global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue
     msg = message.split(",")
@@ -165,6 +174,9 @@ def applyProtocol(tag,message):
                     elif msg[4] == "backward":
                         dhurt.backward = 0
                         side = "backward"
+                    dhurt.shotsRec += 1
+                    dshooter.shots += 1
+
 
                     #answering
                     tagtosend = "MOVEMENT"
@@ -186,6 +198,10 @@ def applyProtocol(tag,message):
                         sendMessage(tagtosend, msgtosend)
                         if dblueAlives == 0 or dredAlives == 0:
                             gameOver()
+
+                    #updating web statistics
+                    updateWeb(1, 0, dhurt.name)
+                    updateWeb(1, 0, dshooter)
             else:
                 sendMessage("Ginfo", "Err: fire from a not signed up dron")
         else:
@@ -210,6 +226,8 @@ def applyProtocol(tag,message):
                         bred += 1
                     if bblue == 0 or bred == 0:
                         gameOver()
+                updateWeb(0, 1, auxBase)
+                updateWeb(1, 0, auxDrone)
             else:
                 sendMessage("Ginfo", "Err: CATCH from a not signed up dron or base")
         else:

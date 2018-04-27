@@ -1,0 +1,117 @@
+ body{
+            background-color:#EAECEE;
+        }
+        h1{
+            padding: 25px;
+        }
+        .main-header{
+            background-color:#A93226;
+            padding-left:25px;
+            padding-right:25px;
+            padding-top:30px;
+            padding-bottom:30px;
+            color:white;
+            font-size: 300%
+        }
+
+        ul{
+            list-style-type: none;
+            font-size: 18px;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            float:left;
+        }
+        p{
+            padding-left: 25px;
+            font-size: 100%;
+        }
+        li a{
+            text-decoration: none;
+            color:#666;
+            padding: 20px;
+            display: block;
+        }
+        .actual{
+            background-color: #A93226;
+            color: white;
+        }
+        li a:hover{
+            background-color: #CD6155;
+            color: white;
+
+        }
+        .drop-down{
+           height:0;
+           overflow:hidden;
+           position: relative;
+           float: left;
+           display: block;
+
+        }
+        .playerMenu{
+            float:left;
+            cursor:pointer;
+            display:block;
+
+            padding-right:25px;
+            padding-top:5px;
+            padding-bottom:30px;
+        }
+        .droneStatistics{
+            display: block;
+            padding-left:25px;
+            float: none;
+        }
+        h2{
+            padding-left: 25px;
+            padding-top: 15px;
+            margin: 0;
+
+        }
+        h3{
+            padding-left: 25px;
+            padding-top: 15px;
+        }
+        nav{
+            position: relative;
+            padding-top: 15px;
+
+        }
+        .dronesList{
+            padding-left: 20px;
+            margin:0;
+        }
+        #box{
+            padding-left:25px;
+            padding-right:25px;
+            padding-top:30px;
+            padding-bottom:30px;
+            font-size: 300%;
+            font-weight: bold;
+        }
+        .txt {
+              color: hsla(0,0%,0%,0);
+              text-shadow: #fff 0 0 60px;
+              transition: text-shadow 2s cubic-bezier(0, 1, 0, 1);
+                }
+                @-moz-document url-prefix() { .txt { text-shadow: #fff 0 0 20px; } } /* FF fix */
+
+        #box:hover .txt {
+		        text-shadow: #fff 0 0 5px;
+		        transition: text-shadow 1s cubic-bezier(0, 0.75, 0, 1);
+        }
+        .txt2 {
+            margin: 0 10px;
+            color: hsla(0,0%,0%,0);
+            text-shadow: white 0 0 5px;
+             transition: text-shadow 1s cubic-bezier(0, 1, 0, 1);
+	    }
+
+        #box:hover .txt2 {
+		        text-shadow: white 0 0 100px;
+		        transition: text-shadow 2s cubic-bezier(0, 0.75, 0, 1);
+        }
+        @-moz-document url-prefix() { #box:hover .txt2 { text-shadow: white 0 0 20px; } } /* FF fix

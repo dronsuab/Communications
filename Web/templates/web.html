@@ -5,20 +5,22 @@
     <title> GAME OF DRONES</title>
     <link rel="stylesheet" href='style.css' type="text/css">
     <style>
-        body{
+         body{
             background-color:#EAECEE;
         }
         h1{
-            padding: 50px;
+            padding: 25px;
+            color: #424949
         }
         .main-header{
-        background-color:#808B96;
-        padding-left:25px;
-        padding-right:25px;
-        padding-top:30px;
-        padding-bottom:30px;
-        color:white;
-        font-size: 300%
+            background-color:#2C3E50;
+            padding-left:0px;
+            padding-right:0px;
+            padding-top:20px;
+            padding-bottom:20px;
+            color:white;
+            font-size: 300%
+
         }
 
         ul{
@@ -32,7 +34,7 @@
             float:left;
         }
         p{
-            padding-left: 50px;
+            padding-left: 25px;
             font-size: 100%;
         }
         li a{
@@ -46,24 +48,67 @@
             color: white;
         }
         li a:hover{
-            background-color: #2C3E50;
+            background-color: #566573;
             color: white;
+
+            text-shadow: white 0 0 100px;
+		    transition: text-shadow 2s cubic-bezier(0, 0.75, 0, 1);
+
         }
+        h2{
+            padding-left: 25px;
+            padding-top: 15px;
+            margin: 0;
+            color: #424949;
+
+        }
+        h3{
+            padding-left: 25px;
+            padding-top: 15px;
+            font: italic normal 1.4em georgia, sans-serif;
+	        letter-spacing: 1px;
+	        margin-bottom: 0;
+	        color: #5499C7;
+        }
+        #box{
+            padding-left:15px;
+            padding-right:15px;
+            padding-top:10px;
+            padding-bottom:10px;
+            font-size: 100%;
+            font-weight: bold;
+            border:0;
+            margin:0;
+        }
+        .txt2 {
+            margin: 0 10px;
+	    }
+
+        #box:hover .txt2 {
+		        text-shadow: white 0 0 100px;
+		        transition: text-shadow 2s cubic-bezier(0, 0.75, 0, 1);
+        }
+        @-moz-document url-prefix() { #box:hover .txt2 { text-shadow: white 0 0 20px; } } /* FF fix
     </style>
 </head>
 <body>
-    <header class="main-header"> GAME OF DRONES</header>
+    <header class="main-header">
+        <div id="box">
+		    <span class="txt2">GAME OF DRONES</span>
+        </div>
+    </header>
     <ul>
         <li><a class="actual" href="/"> General follow-up</a></li>
         <li><a href="redteam"> Red team</a></li>
         <li><a href="blueteam"> Blue team</a></li>
+        <li><a href="MVP"> MVP</a></li>
         <li><a href="rules"> Rules</a></li>
     </ul>
     <h1> GENERAL FOLLOW-UP </h1>
-    <p style="color: #A93226"> Red drones alive: {{redDronesAlive}}</p>
-    <p style="color: #A93226"> Red bases conquered: {{redBasesConquered}}</p>
-    <p style="color: #2980B9"> Blue drones alive: {{blueDronesAlive}}</p>
-    <p style="color: #2980B9"> Blue bases conquered: {{blueBasesConquered}}</p>
-    <p> WINNER: {{winner}}</p>
+    <p style="color: #CD6155; font-size: 150%"> Red drones alive: {{redDronesAlive}}</p>
+    <p style="color: #CD6155; font-size: 150%"> Red bases conquered: {{redBasesConquered}}</p>
+    <p style="color: #5499C7; font-size: 150%"> Blue drones alive: {{blueDronesAlive}}</p>
+    <p style="color: #5499C7; font-size: 150%"> Blue bases conquered: {{blueBasesConquered}}</p>
+    <p style="font-size: 150%"> WINNER: {{winner}}</p>
 </body>
 </html>

@@ -8,6 +8,10 @@ class Drone:
         self.forward = forward
         self.backward = backward
         self.lifes = lifes
+        self.shots = 0
+        self.shotsRec = 0
+        self.basesCaught = 0
+
     def isDead(self):
         if self.lifes <= 0:
             return True
