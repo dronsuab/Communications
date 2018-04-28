@@ -12,8 +12,10 @@ bred = 0
 bblue = 0
 penaltyTime = 10
 winner = "Unknown"
+#pi broker
+#broker = "192.168.1.101"
+#test broker
 broker = "192.168.1.102"
-#broker = "192.168.1.3"
 #dic with players
 dicBase = {}
 dicDrone = {}
@@ -56,14 +58,22 @@ def updateWeb(fdrone, fbase, object):
                         + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
                         + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught)
         elif fbase:
-            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team
+            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team, conqRecord[]
             sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner \
-                       + ',' + str(fdrone) + ',' + str(fbase) + str(object.name) + str(object.team)
+                       + ',' + str(fdrone) + ',' + str(fbase) +  ',' + str(object.name) + ',' + str(object.team) + ',' + object.conqRecord
+        print sock_msg
         sock.send(sock_msg)
         print("socket: msg sent")
         sock.close()
     except:
         print("Web page socket not available")
+
+    #if the socket still opened we must close it
+    try:
+        sock.close()
+    except:
+        pass
+
 def gameOver():
     tagtosend = "GOVER"
     msgtosend = "GOVER"
@@ -215,6 +225,7 @@ def applyProtocol(tag,message):
                 auxDrone = dicDrone[msg[2]]
                 if not auxDrone.team == auxBase.team and not auxDrone.isDead():
                     #anwering
+                    auxBase.conqRecord += "," + time.strftime("%H:%M:%S")+","+ auxDrone.team + "," + auxDrone.name
                     tagtosend = "CBASE"
                     msgtosend = tagtosend + "," + auxBase.name + "," + auxDrone.team
                     sendMessage(tagtosend, msgtosend)

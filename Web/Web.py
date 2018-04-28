@@ -2,13 +2,9 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import url_for
-from multiprocessing import Process, Value, Array
+from multiprocessing import Process, Value, Array, Manager
 import socket
 import clases as c
-
-#dic with players
-dicBase = {}
-dicDrone = {}
 
 redDronesAlive = Value('i',0)
 blueDronesAlive = Value('i',0)
@@ -22,23 +18,29 @@ app = Flask(__name__)
 @app.route('/')#wrap: route or routes
 def index():
     global redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner
-    return render_template('web.html', redDronesAlive=redDronesAlive.value, blueDronesAlive=blueDronesAlive.value, redBasesConquered = redBasesConquered.value, blueBasesConquered = blueBasesConquered.value, winner = winner.value)
+    return render_template('web.html', redDronesAlive=redDronesAlive.value, blueDronesAlive=blueDronesAlive.value, \
+                           redBasesConquered = redBasesConquered.value, blueBasesConquered = blueBasesConquered.value,\
+                           winner = winner.value)
 
 @app.route('/redteam')
 def redteam():
     global redDronesAlive, redBasesConquered
     dicDroneLen = len(dicDrone)
     dicBaseLen= len(dicBase)
+    dicDroneLocal = dict(dicDrone)
+    dicBaseLocal = dict(dicBase)
 
     return render_template('redteam.html', redDronesAlive=redDronesAlive.value, redBasesConquered=redBasesConquered.value, \
-                           dicBase = dicBase, dicDrone = dicDrone, dicBaseLen= dicBaseLen)
+                           dicBase = dicBaseLocal, dicDrone = dicDroneLocal, dicBaseLen= dicBaseLen)
 @app.route('/blueteam')
 def blueteam():
     global blueDronesAlive, blueBasesConquered
     dicBaseLen = len(dicBase)
+    dicDroneLocal = dict(dicDrone)
+    dicBaseLocal = dict(dicBase)
 
     return render_template('blueteam.html', blueDronesAlive=blueDronesAlive.value, blueBasesConquered=blueBasesConquered.value, \
-                           dicBase = dicBase, dicDrone = dicDrone, dicBaseLen= dicBaseLen)
+                           dicBase = dicBaseLocal, dicDrone = dicDroneLocal, dicBaseLen= dicBaseLen)
 @app.route('/MVP')
 def MVP():
     dicBaseLen = len(dicBase)
@@ -46,23 +48,34 @@ def MVP():
     lenBestShooterList = len(bestShooterList)
     bestConquerorList = theConqueror()
     lenBestConquierorList = len(bestConquerorList)
-    print bestShooterList
-    return render_template('MVP.html',  dicBase = dicBase, dicDrone = dicDrone, dicBaseLen = dicBaseLen, \
+    mostConqueredList = theMostConquered()
+    lenMostConqueredList = len(mostConqueredList)
+    dicDroneLocal = dict(dicDrone)
+    dicBaseLocal = dict(dicBase)
+
+    print mostConqueredList
+
+    return render_template('MVP.html',  dicBase = dicBaseLocal, dicDrone = dicDroneLocal, dicBaseLen = dicBaseLen, \
                            lenBestShooterList = lenBestShooterList, bestShooterList = bestShooterList, \
-                           bestConquerorList=bestConquerorList, lenBestConquierorList=lenBestConquierorList)
+                           bestConquerorList=bestConquerorList, lenBestConquierorList=lenBestConquierorList, \
+                           mostConqueredList=mostConqueredList, lenMostConqueredList=lenMostConqueredList)
 @app.route('/rules')
 def rules():
     return render_template('rules.html')
 @app.route('/test')
 def test():
+
+    global redDronesAlive, redBasesConquered
     dicDroneLen = len(dicDrone)
     dicBaseLen = len(dicBase)
+    dicDroneLocal = dict(dicDrone)
+    dicBaseLocal = dict(dicBase)
 
     return render_template('test.html', redDronesAlive=redDronesAlive.value,
-                           redBasesConquered=redBasesConquered.value, \
-                           dicBase=dicBase, dicDrone=dicDrone, dicDroneLen=dicDroneLen, dicBaseLen=len(dicBase))
+                           redBasesConquered=dicBaseLen, \
+                           dicBase=dicBaseLocal, dicDrone=dicDroneLocal, dicBaseLen=dicBaseLen)
 
-def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicDrone, dicBase):
+def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase, dicDrone):
     #socket to comunicate with others
     while(1):
         sock = socket.socket()
@@ -85,75 +98,98 @@ def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesCon
             # left, forward, backward, lives, shots, shotsRec, basesCaught
             if mlist[7] in dicDrone:
                 drone = dicDrone[mlist[7]]
-                drone.right.value = int(mlist[9])
-                drone.left.value = int(mlist[10])
-                drone.forward.value = int(mlist[11])
-                drone.backward.value = int(mlist[12])
-                drone.lives.value = int(mlist[13])
-                drone.shots.value = int(mlist[14])
-                drone.shotsRec.value = int(mlist[15])
-                drone.basesCaught.value = int(mlist[16])
+                drone.right = int(mlist[9])
+                drone.left = int(mlist[10])
+                drone.forward = int(mlist[11])
+                drone.backward = int(mlist[12])
+                drone.lives = int(mlist[13])
+                drone.shots = int(mlist[14])
+                drone.shotsRec = int(mlist[15])
+                drone.basesCaught = int(mlist[16])
 
             else:
                 dicDrone[mlist[7]] = c.Drone(mlist[7], mlist[8], int(mlist[9]), int(mlist[10]), int(mlist[11]), \
                                              int(mlist[12]), int (mlist[13]), int(mlist[14]), int(mlist[15]), int(mlist[16]))
         elif fbase  == 1:
-            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team
-            if mlist[7] in dicBase:
-                base = dicBase[mlist[7]]
-                base.team.value = mlist[8]
-            else:
-                dicBase[mlist[7]] = c.Base(mlist[7], mlist[8])
+            #msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team
 
+            conqRecordList = mlist[9:]
+            count = 0
+            auxList = []
+            if mlist[7] in dicBase:
+                dicBase[mlist[7]].team = mlist[8]
+                for item in conqRecordList:
+                    count += 1
+                    auxList.append(item)
+                    if count == 3:
+                        dicBase[mlist[7]].conqRecord.append(auxList)
+                        auxList = []
+                        count = 0
+            else:
+                conqRecordTupleList = []
+                for item in conqRecordList:
+                    count += 1
+                    auxList.append(item)
+                    if count == 3:
+                        conqRecordTupleList.append(auxList)
+                        auxList = []
+                        count = 0
+                dicBase[mlist[7]] = c.Base(mlist[7], mlist[8], conqRecordTupleList)
         sock_c.close()
 def theShooter():
     ''' Search who are the best shooters'''
     name = []
     maxShoots = 0
-    for key in dicDrone:
-        if dicDrone[key].shots.value >=  maxShoots:
-            if dicDrone[key].shots.value == maxShoots:
+    dicDroneLocal = dict(dicDrone)
+    for key in dicDroneLocal:
+        if dicDroneLocal[key].shots >=  maxShoots:
+            if dicDroneLocal[key].shots == maxShoots:
                 name.append(key)
-                maxShoots = dicDrone[key].shots.value
+                maxShoots = dicDroneLocal[key].shots
             else:
                 name = []
                 name.append(key)
-                maxShoots = dicDrone[key].shots.value
+                maxShoots = dicDroneLocal[key].shots
     return name
 
 def theConqueror():
     ''' Search who are the best conquerors '''
     name = []
     maxConquests = 0
-    for key in dicDrone:
-        if dicDrone[key].basesCaught.value >= maxConquests:
-            if dicDrone[key].basesCaught.value == maxConquests:
+    dicDroneLocal = dict(dicDrone)
+    for key in dicDroneLocal:
+        if dicDroneLocal[key].basesCaught >= maxConquests:
+            if dicDroneLocal[key].basesCaught == maxConquests:
                 name.append(key)
-                maxConquests = dicDrone[key].basesCaught.value
+                maxConquests = dicDroneLocal[key].basesCaught
             else:
                 name = []
                 name.append(key)
-                maxConquests = dicDrone[key].basesCaught.value
+                maxConquests = dicDroneLocal[key].basesCaught
     return name
+def theMostConquered():
+    name = []
+    maxConquered = 0
+    dicBaseLocal = dict(dicBase)
+    for key in dicBaseLocal:
+        if len(dicBaseLocal[key].conqRecord) >= maxConquered:
+            if len(dicBaseLocal[key].conqRecord) == maxConquered:
+                name.append(key)
+            else:
+                name = []
+                name.append(key)
+                maxConquered = len(dicBaseLocal[key].conqRecord)
+    return name
+
 
 
 if __name__ == '__main__':
 
-    # only test
-    dicBase['test'] = c.Base("Btest", "red")
-    dicBase['test2'] = c.Base("Btest2", "red")
-    dicDrone['test'] = c.Drone("Dtest", "red", 1, 1, 1, 1, 4, 1, 0, 0)
-    dicDrone['test2'] = c.Drone("Dtest2", "red", 1, 1, 1, 1, 4, 0, 0, 0)
-    redDronesAlive.value = 2
+    manager = Manager()
+    # dic with players
+    dicDrone = manager.dict()
+    dicBase = manager.dict()
 
-    dicBase['test3'] = c.Base("Btest3", "blue")
-    dicBase['test4'] = c.Base("Btest4", "blue")
-    dicDrone['test3'] = c.Drone("Dtest3", "blue", 1, 1, 1, 1, 4, 0, 0, 1)
-    dicDrone['test4'] = c.Drone("Dtest4", "blue", 1, 1, 1, 1, 4, 0, 0, 0)
-    blueDronesAlive.value = 2
-
-    dicDroneLen = len(dicDrone)
-    dicBaseLen = len(dicBase)
     #print dicDroneLen
     p = Process(target=refreshData, args=(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase, dicDrone))
     p.start()

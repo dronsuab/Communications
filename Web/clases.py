@@ -1,23 +1,23 @@
 from multiprocessing import Value, Array
 class Drone:
     def __init__(self, name, team, right, left, forward, backward, lives, shots, shotsRec, basesCaught):
-        self.name = Array('c', name)
-        self.team = Array('c', team)
-        self.right = Value('i',right)
-        self.left = Value('i',left)
-        self.forward = Value('i',forward)
-        self.backward = Value('i',backward)
-        self.lives = Value('i',lives)
-        self.shots = Value('i',shots)
-        self.shotsRec = Value('i', shotsRec)
-        self.basesCaught = Value('i', basesCaught)
+        self.name = name
+        self.team = team
+        self.right = right
+        self.left = left
+        self.forward = forward
+        self.backward = backward
+        self.lives = lives
+        self.shots = 0
+        self.shotsRec = 0
+        self.basesCaught = 0
     def isDead(self):
-        if self.lives.value <= 0:
+        if self.lives <= 0:
             return True
         else:
             return False
 class Base:
-    def __init__(self, name, team):
-        self.name = Array('c', name)
-        self.team = Array('c', team)
-
+    def __init__(self, name, team, conqRecord):
+        self.name = name
+        self.team = team
+        self.conqRecord = conqRecord

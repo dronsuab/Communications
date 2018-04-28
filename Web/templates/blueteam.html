@@ -38,6 +38,10 @@
             padding-left: 25px;
             font-size: 100%;
         }
+        h4{
+            padding-left: 25px;
+            font-size: 100%;
+        }
         li a{
             text-decoration: none;
             color:#666;
@@ -149,39 +153,39 @@
     </header>
     <ul>
         <li><a href="/"> General follow-up</a></li>
+        <li><a href="rules"> Rules</a></li>
         <li><a href="redteam"> Red team</a></li>
         <li><a class="actual" href="blueteam"> Blue team</a></li>
         <li><a href="MVP"> MVP</a></li>
-        <li><a href="rules"> Rules</a></li>
     </ul>
 
     <h1> BLUE TEAM FOLLOW-UP </h1>
-    <p style="color: #5499C7; font-size: 150% "> Blue drones alive: {{blueDronesAlive}}</p>
-    <p style="color: #5499C7; font-size: 150%"> Blue bases conquered: {{blueBasesConquered}}</p>
+    <h4 style="color: #5499C7; font-size: 150% "> Blue drones alive: {{blueDronesAlive}}</h4>
+    <h4 style="color: #5499C7; font-size: 150%"> Blue bases conquered: {{blueBasesConquered}}</h4>
     <h2>MAIN PLAYERS STATISTICS</h2>
     <nav>
         <h3>DRONES</h3>
-            {% if blueDronesAlive == 0 %}
+            {% if blueDronesAlive.value == 0 %}
                 <p>no drone playing</p>
             {% else %}
             <ul class="dronesList">
                 {% for key in dicDrone %}
                 <li>
-                    {% if dicDrone[key].team.value == "blue" %}
+                    {% if dicDrone[key].team == "blue" %}
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                                {% if dicDrone[key].lives.value == 0 %}
-                                    <p class="players">{{dicDrone[key].name.value}} (DEAD)</p>
+                                {% if dicDrone[key].lives == 0 %}
+                                    <p class="players">{{dicDrone[key].name}} (DEAD)</p>
                                 {%else%}
-                                     <p class="players">{{dicDrone[key].name.value}}</p>
+                                     <p class="players">{{dicDrone[key].name}}</p>
                                 {% endif %}
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[key].lives.value}}</li>
-                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[key].shots.value}}</li>
-                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[key].shotsRec.value}}</li>
-                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[key].basesCaught.value}}</li>
+                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[key].lives}}</li>
+                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[key].shots}}</li>
+                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[key].shotsRec}}</li>
+                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[key].basesCaught}}</li>
                                 </ul>
                             </div>
                             </li>
@@ -200,17 +204,24 @@
                 <p>no base to conquest</p>
             {% else %}
             <ul class="dronesList">
-                {% for key in dicDrone %}
+                {% for key in dicBase %}
                 <li>
-                    {% if dicBase[key].team.value == "blue" %}
+                    {% if dicBase[key].team == "blue" %}
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                            <p class="players">{{dicDrone[key].name.value}}</p>
+                            <p class="players">{{dicBase[key].name}}</p>
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>name</u>: {{dicBase[key].name.value}}</li>
-                                    <li class="droneStatistics"> <u>actual team</u>: {{dicBase[key].team.value}}</li>
+                                    <li class="droneStatistics"> <u>name</u>: {{dicBase[key].name}}</li>
+                                    <li class="droneStatistics"> <u>actual team</u>: {{dicBase[key].team}}</li>
+                                    <li class="droneStatistics"> <u>conquest record</u>:</li>
+                                        <ol type="1">
+                                        {%for list in dicBase[key].conqRecord%}
+                                            <li style="padding: 10px">{{list[0]}}, {{list[1]}}, {{list[2]}}</li>
+                                        {% endfor %}
+
+                                         </ol>
                                 </ul>
                             </div>
                             </li>
@@ -248,15 +259,7 @@ $(window).ready(function(){
       }
    })
 })
-$(window).ready(function(){
-   $('ul').click(function(){
-      if($(this).next().hasClass('desplegado')){
-         $(this).next().removeClass('desplegado').animate({height:0},500);
-      }else{
-         $(this).next().addClass('desplegado').animateAuto("height",500);
-      }
-   })
-})
+
     </script>
 </body>
 </html>

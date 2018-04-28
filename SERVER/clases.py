@@ -1,3 +1,4 @@
+import time
 class Drone:
     def __init__(self, name, team, controller, right, left, forward, backward, lifes):
         self.name = name
@@ -21,6 +22,8 @@ class Base:
     def __init__(self, name, team):
         self.name = name
         self.team = team
+        #list of (time, team, who)
+        self.conqRecord = "no time," + team + ",no drone"
 class Controller:
     def __init__(self, name, drone, team, right, left, forward, backward):
         self.name = name

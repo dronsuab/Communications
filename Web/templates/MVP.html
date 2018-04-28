@@ -149,10 +149,11 @@
     </header>
     <ul>
         <li><a href="/"> General Follow-up </a></li>
+        <li><a href="rules"> Rules</a></li>
         <li><a href="redteam"> Red team</a></li>
         <li><a href="blueteam"> Blue team</a></li>
         <li><a class="actual" href="MVP"> MVP</a></li>
-        <li><a href="rules"> Rules</a></li>
+
     </ul>
     <h1> MVP </h1>
     <p> Here we can consult the best scores </p>
@@ -167,19 +168,19 @@
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                                {% if dicDrone[shooter].lives.value == 0 %}
+                                {% if dicDrone[shooter].lives == 0 %}
 
-                                    <p class="players">{{dicDrone[shooter].name.value}} (DEAD)</p>
+                                    <p class="players">{{dicDrone[shooter].name}} (DEAD)</p>
                                 {%else%}
-                                     <p class="players">{{dicDrone[shooter].name.value}}</p>
+                                     <p class="players">{{dicDrone[shooter].name}}</p>
                                 {% endif %}
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>team</u>: {{dicDrone[shooter].team.value}}</li>
-                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[shooter].lives.value}}</li>
-                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[shooter].shots.value}}</li>
-                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[shooter].shotsRec.value}}</li>
-                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[shooter].basesCaught.value}}</li>
+                                    <li class="droneStatistics"> <u>team</u>: {{dicDrone[shooter].team}}</li>
+                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[shooter].lives}}</li>
+                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[shooter].shots}}</li>
+                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[shooter].shotsRec}}</li>
+                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[shooter].basesCaught}}</li>
                                 </ul>
                             </div>
                             </li>
@@ -201,19 +202,19 @@
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                                {% if dicDrone[conqueror].lives.value == 0 %}
+                                {% if dicDrone[conqueror].lives == 0 %}
 
-                                    <p class="players">{{dicDrone[conqueror].name.value}} (DEAD)</p>
+                                    <p class="players">{{dicDrone[conqueror].name}} (DEAD)</p>
                                 {%else%}
-                                     <p class="players">{{dicDrone[conqueror].name.value}}</p>
+                                     <p class="players">{{dicDrone[conqueror].name}}</p>
                                 {% endif %}
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>team</u>: {{dicDrone[conqueror].team.value}}</li>
-                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[conqueror].lives.value}}</li>
-                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[conqueror].shots.value}}</li>
-                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[conqueror].shotsRec.value}}</li>
-                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[conqueror].basesCaught.value}}</li>
+                                    <li class="droneStatistics"> <u>team</u>: {{dicDrone[conqueror].team}}</li>
+                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[conqueror].lives}}</li>
+                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[conqueror].shots}}</li>
+                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[conqueror].shotsRec}}</li>
+                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[conqueror].basesCaught}}</li>
                                 </ul>
                             </div>
                             </li>
@@ -225,36 +226,33 @@
             {% endif %}
      </nav>
     <nav>
-        <h3> THE MOST CONQUERED BASE (NOT WORKING YET)</h3>
-            {% if redDronesAlive == 0 %}
-                <p>no drone playing</p>
+        <h3> THE MOST CONQUERED BASE</h3>
+            {% if lenMostConqueredList == 0 %}
+                <p>no base playing</p>
             {% else %}
             <ul class="dronesList">
-                {% for key in dicDrone %}
+                {% for key in mostConqueredList %}
                 <li>
-                    {% if dicDrone[key].team.value == "red" %}
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                                {% if dicDrone[key].lives.value == 0 %}
-                                    <p class="players">{{dicDrone[key].name.value}} (DEAD)</p>
-                                {%else%}
-                                     <p class="players">{{dicDrone[key].name.value}}</p>
-                                {% endif %}
+                                <p class="players">{{dicBase[key].name}}</p>
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[key].lives.value}}</li>
-                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[key].shots.value}}</li>
-                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[key].shotsRec.value}}</li>
-                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[key].basesCaught.value}}</li>
+                                    <li class="droneStatistics"> <u>actual Team</u>: {{dicBase[key].team}}</li>
+                                    <li class="droneStatistics"> <u>conquest record</u>:</li>
+                                        <ol type="1">
+                                        {%for list in dicBase[key].conqRecord%}
+                                            <li style="padding: 10px">{{list[0]}}, {{list[1]}}, {{list[2]}}</li>
+                                        {% endfor %}
+
+                                         </ol>
                                 </ul>
                             </div>
                             </li>
                         </ul>
                     </div>
                 </li>
-
-                    {% endif %}
                 {% endfor %}
              </ul>
             {% endif %}
