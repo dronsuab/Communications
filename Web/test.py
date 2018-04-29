@@ -1,26 +1,21 @@
 from flask import Flask
 from flask import request
 from flask import render_template
-from multiprocessing import Process, Value, Array
+from multiprocessing import Process, Value, Array, Manager
 import socket
 import clases as c
+import operator
 
-#dic with players
-dicBase = {}
-dicDrone = {}
+def sortdict(d):
+    l =  sorted(d.items(), key=operator.itemgetter(0))
+    sortedDict = {}
+    for tup in l:
+        sortedDict[tup[0]]= tup[1]
+    return sortedDict
 
-redDronesAlive = Value('i',0)
-blueDronesAlive = Value('i',0)
-redBasesConquered = Value('i',0)
-blueBasesConquered = Value('i',0)
-winner = Array('c', "Unknown")
+if __name__ == "__main__":
 
-def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase):
-
-    print dicBase["TestBase"].name.value
-
-if __name__ == '__main__':
-    dicBase["TestBase"] = c.Base("testBase","red")
-    print dicBase['TestBase'].name.value
-    p = Process(target=refreshData, args=(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase))
-    p.start()
+    d = {"drone2":2, "drone1":3}
+    sortedD = sortdict(d)
+    for k in sortedD:
+        print k + "," + str(sortedD[k])

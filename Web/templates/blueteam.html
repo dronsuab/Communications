@@ -108,6 +108,7 @@
 	        margin-bottom: 0;
 	        padding-bottom: 5px;
 	        color: #5499C7;
+	        text-align:center;
         }
         .dronesList{
             padding-left: 20px;
@@ -169,23 +170,32 @@
                 <p>no drone playing</p>
             {% else %}
             <ul class="dronesList">
-                {% for key in dicDrone %}
+                {% for item in dicDrone %}
                 <li>
-                    {% if dicDrone[key].team == "blue" %}
+                    {% if item[1].team == "blue" %}
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                                {% if dicDrone[key].lives == 0 %}
-                                    <p class="players">{{dicDrone[key].name}} (DEAD)</p>
+                                {% if item[1].lives == 0 %}
+                                    <p class="players">{{item[1].name}} (DEAD)</p>
                                 {%else%}
-                                     <p class="players">{{dicDrone[key].name}}</p>
+                                     <p class="players">{{item[1].name}}</p>
                                 {% endif %}
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>lives</u>: {{dicDrone[key].lives}}</li>
-                                    <li class="droneStatistics"> <u>shots in the target</u>: {{dicDrone[key].shots}}</li>
-                                    <li class="droneStatistics"> <u>shots received</u>: {{dicDrone[key].shotsRec}}</li>
-                                    <li class="droneStatistics"> <u>bases conquered</u>: {{dicDrone[key].basesCaught}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Lives</u>: {{item[1].lives}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Shots in the target</u>: {{item[1].shots}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Shots received</u>: {{item[1].shotsRec}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Bases conquered</u>: {{item[1].basesCaught}}</li>
+                                    {%if item[1].basesCaught > 0%}
+                                    <h7 style="padding-top:5px" class="droneStatistics"> BASES CONQUERED RECORD</h7>
+                                        <ol type="1">
+                                        {%for list in item[1].basesCaughtRecord%}
+                                            <li style="padding: 0px">{{list[1]}}, {{list[0]}}</li><br>
+                                        {% endfor %}
+
+                                         </ol>
+                                    {% endif %}
                                 </ul>
                             </div>
                             </li>
@@ -204,24 +214,27 @@
                 <p>no base to conquest</p>
             {% else %}
             <ul class="dronesList">
-                {% for key in dicBase %}
+                {% for item in dicBase %}
                 <li>
-                    {% if dicBase[key].team == "blue" %}
+                    {% if item[1].team == "blue" %}
                     <div>
                         <ul class= "playerMenu">
                             <li>
-                            <p class="players">{{dicBase[key].name}}</p>
+                            <p class="players">{{item[1].name}}</p>
                             <div class="drop-down">
                                 <ul>
-                                    <li class="droneStatistics"> <u>name</u>: {{dicBase[key].name}}</li>
-                                    <li class="droneStatistics"> <u>actual team</u>: {{dicBase[key].team}}</li>
-                                    <li class="droneStatistics"> <u>conquest record</u>:</li>
-                                        <ol type="1">
-                                        {%for list in dicBase[key].conqRecord%}
-                                            <li style="padding: 10px">{{list[0]}}, {{list[1]}}, {{list[2]}}</li>
-                                        {% endfor %}
+                                    <li style="text-align: center" class="droneStatistics"> <u>Actual team</u>: {{item[1].team}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Times conquered</u>: {{item[1].timesConquered}}</li>
+                                    {% if item[1].timesConquered > 0 %}
+                                    <li style="text-align: center" class="droneStatistics"> <u>Last conquered by</u>: {{item[1].conqRecord[-1][2]}}</li>
+                                    <h7 style="padding-top:5px" class="droneStatistics"> CONQUEST RECORD</h7>
+                                            <ol type="1">
+                                            {%for list in item[1].conqRecord%}
+                                                <li>{{list[0]}}, {{list[1]}}, {{list[2]}}</li><br>
+                                            {% endfor %}
 
-                                         </ol>
+                                            </ol>
+                                    {% endif %}
                                 </ul>
                             </div>
                             </li>

@@ -12,6 +12,7 @@ class Drone:
         self.shots = 0
         self.shotsRec = 0
         self.basesCaught = 0
+        self.basesCaughtRecord = ""
 
     def isDead(self):
         if self.lifes <= 0:
@@ -24,6 +25,7 @@ class Base:
         self.team = team
         #list of (time, team, who)
         self.conqRecord = "no time," + team + ",no drone"
+        self.timesConquered = 0
 class Controller:
     def __init__(self, name, drone, team, right, left, forward, backward):
         self.name = name

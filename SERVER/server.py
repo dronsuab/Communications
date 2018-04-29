@@ -52,16 +52,17 @@ def updateWeb(fdrone, fbase, object):
         sock.connect(("localhost", 9999))
         if fdrone:
             # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, right,
-            #left, forward, backward, lifes, shots, shotsRec, basesCaught
+            #left, forward, backward, lifes, shots, shotsRec, basesCaught, basesCaughtRecord
             sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner + ',' + str(fdrone) \
                         + ',' + str(fbase) +',' + str(object.name) + ',' + str(object.team) + ',' + str(object.right) \
                         + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
-                        + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught)
+                        + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught) + str(object.basesCaughtRecord)
         elif fbase:
-            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team, conqRecord[]
+            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team, timesConquered, conqRecord[]
             sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner \
-                       + ',' + str(fdrone) + ',' + str(fbase) +  ',' + str(object.name) + ',' + str(object.team) + ',' + object.conqRecord
-        print sock_msg
+                       + ',' + str(fdrone) + ',' + str(fbase) +  ',' + str(object.name) + ',' + str(object.team) + ',' \
+                       + str(object.timesConquered) + ',' + object.conqRecord
+        # print sock_msg
         sock.send(sock_msg)
         print("socket: msg sent")
         sock.close()
@@ -225,7 +226,12 @@ def applyProtocol(tag,message):
                 auxDrone = dicDrone[msg[2]]
                 if not auxDrone.team == auxBase.team and not auxDrone.isDead():
                     #anwering
-                    auxBase.conqRecord += "," + time.strftime("%H:%M:%S")+","+ auxDrone.team + "," + auxDrone.name
+                    actualTime = time.strftime("%H:%M:%S")
+                    auxBase.conqRecord += "," + actualTime +","+ auxDrone.team + "," + auxDrone.name
+                    auxDrone.basesCaught += 1
+                    auxDrone.basesCaughtRecord += "," + auxBase.name + "," + actualTime
+                    auxBase.timesConquered += 1
+                    auxBase.team = auxDrone.team
                     tagtosend = "CBASE"
                     msgtosend = tagtosend + "," + auxBase.name + "," + auxDrone.team
                     sendMessage(tagtosend, msgtosend)
@@ -237,8 +243,8 @@ def applyProtocol(tag,message):
                         bred += 1
                     if bblue == 0 or bred == 0:
                         gameOver()
-                updateWeb(0, 1, auxBase)
-                updateWeb(1, 0, auxDrone)
+                    updateWeb(0, 1, auxBase)
+                    updateWeb(1, 0, auxDrone)
             else:
                 sendMessage("Ginfo", "Err: CATCH from a not signed up dron or base")
         else:
