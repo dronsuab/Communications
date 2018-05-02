@@ -13,7 +13,9 @@ class Drone:
         self.shotsRec = 0
         self.basesCaught = 0
         self.basesCaughtRecord = ""
-
+        self.numPenalties = 0
+        self.penalties = []
+        self.penaltiesRecord = ""
     def isDead(self):
         if self.lifes <= 0:
             return True

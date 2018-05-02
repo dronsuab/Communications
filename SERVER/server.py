@@ -22,9 +22,8 @@ dicDrone = {}
 dicController = {}
 #defining callbacks
 def on_connect(client, userdata, flags, rc):
-   if rc == 0:
-       print "connection successful"
-   else:
+   if rc != 0:
+       #print "connection successful"
        print "connection refused, rc = " + rc
 def on_subscribe(client, userdata, mid, granted_qos):
     pass
@@ -47,27 +46,42 @@ def sendMessage(tag, msg):
     clientSender.loop_stop()
 
 def updateWeb(fdrone, fbase, object):
-    try:
-        sock = socket.socket()
-        sock.connect(("localhost", 9999))
-        if fdrone:
-            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, right,
-            #left, forward, backward, lifes, shots, shotsRec, basesCaught, basesCaughtRecord
+    sock = socket.socket()
+    sock.connect(("localhost", 9999))
+    if fdrone:
+        # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, right,
+        #left, forward, backward, lifes, shots, shotsRec, basesCaught, basesCaughtRecord, numPenalties ,penalties, penaltiesRecord
+        if object.basesCaught == 0:
+            if len(object.penaltiesRecord) == 0:
+                sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner + ',' + str(fdrone) \
+                           + ',' + str(fbase) + ',' + str(object.name) + ',' + str(object.team) + ',' + str(object.right) \
+                           + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
+                           + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught) \
+                           + ',' + str(object.basesCaughtRecord) + ',' + str(object.numPenalties) + ',' + (','.join(object.penalties))\
+                           + ',' + object.penaltiesRecord
+            else:
+                sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner + ',' + str(fdrone) \
+                           + ',' + str(fbase) + ',' + str(object.name) + ',' + str(object.team) + ',' + str(object.right) \
+                           + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
+                           + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught) + \
+                           ',' + str(object.basesCaughtRecord) + ',' + str(object.numPenalties) + ',' + (','.join(object.penalties)) + object.penaltiesRecord
+
+        else:
             sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner + ',' + str(fdrone) \
-                        + ',' + str(fbase) +',' + str(object.name) + ',' + str(object.team) + ',' + str(object.right) \
-                        + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
-                        + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught) + str(object.basesCaughtRecord)
-        elif fbase:
-            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team, timesConquered, conqRecord[]
-            sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner \
-                       + ',' + str(fdrone) + ',' + str(fbase) +  ',' + str(object.name) + ',' + str(object.team) + ',' \
-                       + str(object.timesConquered) + ',' + object.conqRecord
-        # print sock_msg
-        sock.send(sock_msg)
-        print("socket: msg sent")
-        sock.close()
-    except:
-        print("Web page socket not available")
+                    + ',' + str(fbase) +',' + str(object.name) + ',' + str(object.team) + ',' + str(object.right) \
+                    + ',' + str(object.left) + ',' + str(object.forward) + ',' + str(object.backward) + ',' + str(object.lifes) \
+                    + ',' + str(object.shots) + ',' + str(object.shotsRec) + ',' + str(object.basesCaught) \
+                    + str(object.basesCaughtRecord) + ',' + str(object.numPenalties) + ',' + (','.join(object.penalties)) + object.penaltiesRecord
+    elif fbase:
+        # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, timesConquered, conqRecord[]
+        sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner \
+                   + ',' + str(fdrone) + ',' + str(fbase) +  ',' + str(object.name) + ',' + str(object.team) + ',' \
+                   + str(object.timesConquered) + ',' + object.conqRecord
+
+    sock.send(sock_msg)
+    #print("socket: msg sent")
+    sock.close()
+    #print("Web page socket not available")
 
     #if the socket still opened we must close it
     try:
@@ -148,19 +162,25 @@ def subscribePlayer(message):
             sendMessage("Ginfo", "Err: " + msg[0] + " was already signed up")
 def applyPenaltyTime(side, dhurt):
     global penaltyTime
-    time.sleep(penaltyTime)
-    if side == "right":
-        dhurt.right = 1
-    elif side == "left":
-        dhurt.left = 1
-    elif side == "forward":
-        dhurt.forward = 1
-    elif side == "backward":
-        dhurt.backward = 1
-
-    tagtosend = "MOVEMENT"
-    msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + "penalty"
-    sendMessage(tagtosend, msgtosend)
+    try:
+        updateWeb(1, 0, dhurt)
+        time.sleep(penaltyTime)
+        if side == "right":
+            dhurt.right = 1
+        elif side == "left":
+            dhurt.left = 1
+        elif side == "forward":
+            dhurt.forward = 1
+        elif side == "backward":
+            dhurt.backward = 1
+        dhurt.penalties.remove(side)
+        dhurt.numPenalties -= 1
+        tagtosend = "MOVEMENT"
+        msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + "penalty"
+        sendMessage(tagtosend, msgtosend)
+        updateWeb(1, 0, dhurt)
+    except:
+        pass
 def applyProtocol(tag,message):
     global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue
     msg = message.split(",")
@@ -172,6 +192,7 @@ def applyProtocol(tag,message):
                 dshooter = dicDrone[msg[2]]
                 if not dhurt.team == dshooter.team and not dshooter.isDead() and not dhurt.isDead():
                     side = ""
+                    actualTime = time.strftime("%H:%M:%S")
                     dhurt.lifes -= 1
                     if msg[4] == "right":
                         dhurt.right = 0
@@ -185,16 +206,15 @@ def applyProtocol(tag,message):
                     elif msg[4] == "backward":
                         dhurt.backward = 0
                         side = "backward"
+                    dhurt.numPenalties += 1
+                    dhurt.penalties.append(side)
+                    dhurt.penaltiesRecord += "," + actualTime + "," + side + ',' + dshooter.name + ',' + str(msg[3])
                     dhurt.shotsRec += 1
                     dshooter.shots += 1
-
-
                     #answering
                     tagtosend = "MOVEMENT"
                     msgtosend = tagtosend + "," + str(dhurt.controller) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward) + "," + str(msg[3])
                     sendMessage(tagtosend, msgtosend)
-                    thread.start_new_thread(applyPenaltyTime,(side,dhurt))
-
                     tagtosend = "LED"
                     msgtosend = tagtosend + "," + str(dhurt.name) + "," + str(dhurt.right) + "," + str(dhurt.left) + "," + str(dhurt.forward) + "," + str(dhurt.backward)
                     sendMessage(tagtosend, msgtosend)
@@ -209,10 +229,13 @@ def applyProtocol(tag,message):
                         sendMessage(tagtosend, msgtosend)
                         if dblueAlives == 0 or dredAlives == 0:
                             gameOver()
-
+                    thread.start_new_thread(applyPenaltyTime, (side, dhurt))
                     #updating web statistics
-                    updateWeb(1, 0, dhurt.name)
-                    updateWeb(1, 0, dshooter)
+                    try:
+                        updateWeb(1, 0, dhurt)
+                        updateWeb(1, 0, dshooter)
+                    except:
+                        pass
             else:
                 sendMessage("Ginfo", "Err: fire from a not signed up dron")
         else:
@@ -243,8 +266,11 @@ def applyProtocol(tag,message):
                         bred += 1
                     if bblue == 0 or bred == 0:
                         gameOver()
-                    updateWeb(0, 1, auxBase)
-                    updateWeb(1, 0, auxDrone)
+                    try:
+                        updateWeb(0, 1, auxBase)
+                        updateWeb(1, 0, auxDrone)
+                    except:
+                        pass
             else:
                 sendMessage("Ginfo", "Err: CATCH from a not signed up dron or base")
         else:

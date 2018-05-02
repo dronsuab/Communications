@@ -186,6 +186,17 @@
                                     <li style="text-align: center" class="droneStatistics"> <u>Lives</u>: {{item[1].lives}}</li>
                                     <li style="text-align: center" class="droneStatistics"> <u>Shots in the target</u>: {{item[1].shots}}</li>
                                     <li style="text-align: center" class="droneStatistics"> <u>Shots received</u>: {{item[1].shotsRec}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Nº current penalties</u>: {{item[1].numPenalties}}</li>
+                                    <li style="text-align: center" class="droneStatistics"> <u>Current penalties</u>: {% for penalty in item[1].penalties %} {{penalty}}{% if item[1].penalties[-1] != penalty %},{%endif%} {% endfor %} </li>
+                                    {% if item[1].lenPenaltiesRecord > 0 %}
+                                        <h7 style="padding-top:5px" class="droneStatistics"> PENALTIES RECORD</h7>
+                                        <ol type="1">
+                                        {%for penalty in item[1].penaltiesRecord%}
+                                            <li style="padding: 0px">{{penalty[0]}}, {{penalty[1]}}, {{penalty[2]}}, {{penalty[3]}}</li><br>
+                                        {% endfor %}
+
+                                         </ol>
+                                    {% endif %}
                                     <li style="text-align: center" class="droneStatistics"> <u>Bases conquered</u>: {{item[1].basesCaught}}</li>
                                     {%if item[1].basesCaught > 0%}
                                     <h7 style="padding-top:5px" class="droneStatistics"> BASES CONQUERED RECORD</h7>
