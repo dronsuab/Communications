@@ -80,122 +80,127 @@ def test():
 
 def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase, dicDrone):
     #socket to comunicate with others
-    while(1):
+
         sock = socket.socket()
         sock.bind(("localhost", 9999))
-        sock.listen(0)
-        sock_c, addr = sock.accept()
-        dataRecived = sock_c.recv(1024)
-        #print ("dataRecived:" + dataRecived)
-        mlist = dataRecived.split(',')
-        #print ("List dataRecived:" + str(dataRecived))
-        redDronesAlive.value = int(mlist[0])
-        blueDronesAlive.value = int(mlist[1])
-        redBasesConquered.value = int(mlist[2])
-        blueBasesConquered.value = int(mlist[3])
-        winner.value = (mlist[4])
-        fdrone = int(mlist[5])
-        fbase = int(mlist[6])
-        if fdrone == 1:
-            # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, right,
-            # left, forward, backward, lives, shots, shotsRec, basesCaught, basesCaughtRecord, numPenalties, penalties, penaltiesRecord
-            caughtRecordInitIndex = 17
-            caughtRecordFinishIndex = int(17 + int(mlist[16])*2)
-            if caughtRecordFinishIndex == caughtRecordInitIndex:
-                caughtRecordFinishIndex += 1
-            caughtRecordList = mlist[caughtRecordInitIndex:caughtRecordFinishIndex]
+        sock.listen(10)
+        while (1):
+            sock_c, addr = sock.accept()
+            dataRecived = sock_c.recv(1024)
+            #print ("dataRecived:" + dataRecived)
+            mlist = dataRecived.split(',')
+            #print ("List dataRecived:" + str(dataRecived))
+            redDronesAlive.value = int(mlist[0])
+            blueDronesAlive.value = int(mlist[1])
+            redBasesConquered.value = int(mlist[2])
+            blueBasesConquered.value = int(mlist[3])
+            winner.value = (mlist[4])
+            fdrone = int(mlist[5])
+            fbase = int(mlist[6])
+            if fdrone == 1:
+                # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, name, team, right,
+                # left, forward, backward, lives, shots, shotsRec, basesCaught, basesCaughtRecord, numPenalties, penalties, penaltiesRecord
+                caughtRecordInitIndex = 17
+                caughtRecordFinishIndex = int(17 + int(mlist[16])*2)
+                if caughtRecordFinishIndex == caughtRecordInitIndex:
+                    caughtRecordFinishIndex += 1
+                caughtRecordList = mlist[caughtRecordInitIndex:caughtRecordFinishIndex]
 
-            dronePenaltiesInitIndex = caughtRecordFinishIndex + 1
-            dronePenaltiesFinishIndex = dronePenaltiesInitIndex + int(mlist[dronePenaltiesInitIndex-1])
-            dronePenalties = mlist[dronePenaltiesInitIndex:dronePenaltiesFinishIndex]
-            dronePenaltiesRecordInitIndex = dronePenaltiesFinishIndex + 1
-            penaltiesRecordList = mlist[dronePenaltiesRecordInitIndex:]
-            count = 0
-            auxList = []
+                dronePenaltiesInitIndex = caughtRecordFinishIndex + 1
+                dronePenaltiesFinishIndex = dronePenaltiesInitIndex + int(mlist[dronePenaltiesInitIndex-1])
+                dronePenalties = mlist[dronePenaltiesInitIndex:dronePenaltiesFinishIndex]
+                if len(dronePenalties) > 0:
+                    dronePenaltiesRecordInitIndex = dronePenaltiesFinishIndex
+                else:
+                    dronePenaltiesRecordInitIndex = dronePenaltiesFinishIndex + 1
 
-            if mlist[7] in dicDrone:
-                drone = dicDrone[mlist[7]]
-                drone.right = int(mlist[9])
-                drone.left = int(mlist[10])
-                drone.forward = int(mlist[11])
-                drone.backward = int(mlist[12])
-                drone.lives = int(mlist[13])
-                drone.shots = int(mlist[14])
-                drone.shotsRec = int(mlist[15])
-                drone.basesCaught = int(mlist[16])
-                drone.numPenalties = int(mlist[dronePenaltiesInitIndex-1])
-                drone.penalties = dronePenalties
-                drone.basesCaughtRecord = []
-                for item in caughtRecordList:
-                    count += 1
-                    auxList.append(item)
-                    if count == 2:
-                        drone.basesCaughtRecord.append(auxList)
-                        auxList = []
-                        count = 0
+                penaltiesRecordList = mlist[dronePenaltiesRecordInitIndex:]
                 count = 0
                 auxList = []
-                drone.penaltiesRecord = []
-                for penalty in penaltiesRecordList:
-                    count += 1
-                    auxList.append(penalty)
-                    if count == 4:
-                        drone.penaltiesRecord.append(auxList)
-                        auxList = []
-                        count = 0
-                drone.lenPenaltiesRecord = len(drone.penaltiesRecord)
-                dicDrone[mlist[7]] = drone
 
-            else:
-                caughtRecordTupList = []
-                for item in caughtRecordList:
-                    count += 1
-                    auxList.append(item)
-                    if count == 2:
-                        caughtRecordTupList.append(auxList)
-                penaltiesRecordTupList = []
+                if mlist[7] in dicDrone:
+                    drone = dicDrone[mlist[7]]
+                    drone.right = int(mlist[9])
+                    drone.left = int(mlist[10])
+                    drone.forward = int(mlist[11])
+                    drone.backward = int(mlist[12])
+                    drone.lives = int(mlist[13])
+                    drone.shots = int(mlist[14])
+                    drone.shotsRec = int(mlist[15])
+                    drone.basesCaught = int(mlist[16])
+                    drone.numPenalties = int(mlist[dronePenaltiesInitIndex-1])
+                    drone.penalties = dronePenalties
+                    drone.basesCaughtRecord = []
+                    for item in caughtRecordList:
+                        count += 1
+                        auxList.append(item)
+                        if count == 2:
+                            drone.basesCaughtRecord.append(auxList)
+                            auxList = []
+                            count = 0
+                    count = 0
+                    auxList = []
+                    drone.penaltiesRecord = []
+                    for penalty in penaltiesRecordList:
+                        count += 1
+                        auxList.append(penalty)
+                        if count == 4:
+                            drone.penaltiesRecord.append(auxList)
+                            auxList = []
+                            count = 0
+                    drone.lenPenaltiesRecord = len(drone.penaltiesRecord)
+                    dicDrone[mlist[7]] = drone
+
+                else:
+                    caughtRecordTupList = []
+                    for item in caughtRecordList:
+                        count += 1
+                        auxList.append(item)
+                        if count == 2:
+                            caughtRecordTupList.append(auxList)
+                    penaltiesRecordTupList = []
+                    count = 0
+                    auxList = []
+                    for item in penaltiesRecordList:
+                        count += 1
+                        auxList.append(item)
+                        if count == 4:
+                            penaltiesRecordTupList.append(auxList)
+                    dicDrone[mlist[7]] = c.Drone(mlist[7], mlist[8], int(mlist[9]), int(mlist[10]), int(mlist[11]), \
+                                                 int(mlist[12]), int(mlist[13]), int(mlist[14]), int(mlist[15]),\
+                                                 int(mlist[16]), caughtRecordTupList, int(mlist[(17 + int(mlist[16])*2 + 1)]), \
+                                                 penaltiesRecordList, penaltiesRecordTupList, len(penaltiesRecordTupList))
+
+            elif fbase == 1:
+                #msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team, timesConquered, conquRecord
+
+                conqRecordList = mlist[10:]
                 count = 0
                 auxList = []
-                for item in penaltiesRecordList:
-                    count += 1
-                    auxList.append(item)
-                    if count == 4:
-                        penaltiesRecordTupList.append(auxList)
-                dicDrone[mlist[7]] = c.Drone(mlist[7], mlist[8], int(mlist[9]), int(mlist[10]), int(mlist[11]), \
-                                             int(mlist[12]), int(mlist[13]), int(mlist[14]), int(mlist[15]),\
-                                             int(mlist[16]), caughtRecordTupList, int(mlist[(17 + int(mlist[16])*2 + 1)]), \
-                                             penaltiesRecordList, penaltiesRecordTupList, len(penaltiesRecordTupList))
-
-        elif fbase == 1:
-            #msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, name, team, timesConquered, conquRecord
-
-            conqRecordList = mlist[10:]
-            count = 0
-            auxList = []
-            if mlist[7] in dicBase:
-                base = dicBase[mlist[7]]
-                base.team = mlist[8]
-                base.timesConquered = int(mlist[9])
-                base.conqRecord=[]
-                for item in conqRecordList:
-                    count += 1
-                    auxList.append(item)
-                    if count == 3:
-                        base.conqRecord.append(auxList)
-                        auxList = []
-                        count = 0
-                dicBase[mlist[7]] = base
-            else:
-                conqRecordTupleList = []
-                for item in conqRecordList:
-                    count += 1
-                    auxList.append(item)
-                    if count == 3:
-                        conqRecordTupleList.append(auxList)
-                        auxList = []
-                        count = 0
-                dicBase[mlist[7]] = c.Base(mlist[7], mlist[8], int(mlist[9]), conqRecordTupleList)
-        sock_c.close()
+                if mlist[7] in dicBase:
+                    base = dicBase[mlist[7]]
+                    base.team = mlist[8]
+                    base.timesConquered = int(mlist[9])
+                    base.conqRecord=[]
+                    for item in conqRecordList:
+                        count += 1
+                        auxList.append(item)
+                        if count == 3:
+                            base.conqRecord.append(auxList)
+                            auxList = []
+                            count = 0
+                    dicBase[mlist[7]] = base
+                else:
+                    conqRecordTupleList = []
+                    for item in conqRecordList:
+                        count += 1
+                        auxList.append(item)
+                        if count == 3:
+                            conqRecordTupleList.append(auxList)
+                            auxList = []
+                            count = 0
+                    dicBase[mlist[7]] = c.Base(mlist[7], mlist[8], int(mlist[9]), conqRecordTupleList)
+            sock_c.close()
 def theShooter():
     ''' Search who are the best shooters'''
     name = []

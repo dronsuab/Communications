@@ -13,7 +13,7 @@ bblue = 0
 penaltyTime = 10
 winner = "Unknown"
 #pi broker
-#broker = "192.168.1.101"
+#broker = "192.168.1.103"
 #test broker
 broker = "192.168.1.102"
 #dic with players
@@ -80,6 +80,7 @@ def updateWeb(fdrone, fbase, object):
 
     sock.send(sock_msg)
     #print("socket: msg sent")
+    #print(sock_msg)
     sock.close()
     #print("Web page socket not available")
 
@@ -180,7 +181,7 @@ def applyPenaltyTime(side, dhurt):
         sendMessage(tagtosend, msgtosend)
         updateWeb(1, 0, dhurt)
     except:
-        pass
+        print("In APPLY PENALTY TIME, error in Update Web")
 def applyProtocol(tag,message):
     global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue
     msg = message.split(",")
@@ -235,7 +236,7 @@ def applyProtocol(tag,message):
                         updateWeb(1, 0, dhurt)
                         updateWeb(1, 0, dshooter)
                     except:
-                        pass
+                        print("In FIRE, error in Update Web")
             else:
                 sendMessage("Ginfo", "Err: fire from a not signed up dron")
         else:
@@ -270,7 +271,8 @@ def applyProtocol(tag,message):
                         updateWeb(0, 1, auxBase)
                         updateWeb(1, 0, auxDrone)
                     except:
-                        pass
+                        print("In CATCH, error in Update Web")
+
             else:
                 sendMessage("Ginfo", "Err: CATCH from a not signed up dron or base")
         else:
