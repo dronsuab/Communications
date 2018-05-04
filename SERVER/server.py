@@ -8,6 +8,13 @@ import socket
 initDroneLifes = 4
 dblueAlives = 0
 dredAlives = 0
+initDronesPlaying = 0
+initRedDronesPlaying = 0
+initBlueDronesPlaying = 0
+initBasesPlaying = 0
+initBlueBasesPlaying = 0
+initRedBasesPlaying = 0
+
 bred = 0
 bblue = 0
 penaltyTime = 10
@@ -78,6 +85,13 @@ def updateWeb(fdrone, fbase, object):
                    + ',' + str(fdrone) + ',' + str(fbase) +  ',' + str(object.name) + ',' + str(object.team) + ',' \
                    + str(object.timesConquered) + ',' + object.conqRecord
 
+    # Initial game values: code 0,0
+    else:
+        #msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, initDronesPlaying, initRedDronesPlaying,
+        # initBlueDronesPlaying, initBasesPlaying, initBlueBasesPlaying, initRedBasesPlaying
+        sock_msg = str(dredAlives) + ',' + str(dblueAlives) + ',' + str(bred) + ',' + str(bblue) + ',' + winner + ',' + str(fdrone) \
+                    + ',' + str(fbase) + ',' + str(initDronesPlaying) + ',' + str(initRedDronesPlaying) + ',' + str(initBlueDronesPlaying) \
+                    + ',' + str(initBasesPlaying) + ',' + str(initBlueBasesPlaying) + ',' + str(initRedBasesPlaying)
     sock.send(sock_msg)
     #print("socket: msg sent")
     #print(sock_msg)
@@ -108,7 +122,8 @@ def gameOver():
     sendMessage("Ginfo", "Winner team: " + winner)
     print "Winner team: " + winner
 def subscribePlayer(message):
-    global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue
+    global dicBase, dicController, dicDrone, dblueAlives, dredAlives, bred, bblue, initBasesPlaying, \
+    initRedBasesPlaying, initBlueBasesPlaying, initDronesPlaying, initRedDronesPlaying, initBlueDronesPlaying
     msg = message.split(",")
     valid = False
     if msg[0].find("base") != -1 and len(msg) == 2:
@@ -117,15 +132,20 @@ def subscribePlayer(message):
             if msg[1] == "red":
                 bred += 1
                 valid = True
+                initBasesPlaying += 1
+                initRedBasesPlaying += 1
             elif msg[1] == "blue":
                 bblue += 1
                 valid = True
+                initBasesPlaying += 1
+                initBlueBasesPlaying += 1
             else:
                 sendMessage("Ginfo", "Err: " + msg[0] + ": team is not valid")
             if valid:
                 dicBase[msg[0]] = c.Base(msg[0], msg[1])
                 sendMessage("Ginfo", msg[0] + " signed up")
                 updateWeb(0, 1, dicBase[msg[0]])
+                updateWeb(0, 0, object)
         else:
             sendMessage("Ginfo", "Err: " + msg[0] + " was already signed up")
 
@@ -150,15 +170,20 @@ def subscribePlayer(message):
             if msg[1] == "red":
                 dredAlives += 1
                 valid = True
+                initDronesPlaying += 1
+                initRedDronesPlaying += 1
             elif msg[1] == "blue":
                 dblueAlives += 1
                 valid = True
+                initDronesPlaying += 1
+                initBlueDronesPlaying += 1
             else:
                 sendMessage("Ginfo", "Err: " + msg[0] + ": team is not valid")
             if valid:
                 dicDrone[msg[0]] = c.Drone(msg[0], msg[1], msg[2], 1, 1, 1, 1, initDroneLifes)
                 sendMessage("Ginfo", msg[0] + " signed up")
                 updateWeb(1, 0, dicDrone[msg[0]])
+                updateWeb(0, 0, object)
         else:
             sendMessage("Ginfo", "Err: " + msg[0] + " was already signed up")
 def applyPenaltyTime(side, dhurt):

@@ -12,6 +12,12 @@ blueDronesAlive = Value('i',0)
 redBasesConquered = Value('i',0)
 blueBasesConquered = Value('i',0)
 winner = Array('c', "Unknown")
+initDronesPlaying = Value('i',0)
+initRedDronesPlaying = Value('i',0)
+initBlueDronesPlaying = Value('i',0)
+initBasesPlaying = Value('i',0)
+initBlueBasesPlaying = Value('i',0)
+initRedBasesPlaying = Value('i',0)
 
 app = Flask(__name__)
 
@@ -19,9 +25,13 @@ app = Flask(__name__)
 @app.route('/')#wrap: route or routes
 def index():
     global redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner
+    remainingDrones = redDronesAlive.value + blueDronesAlive.value
     return render_template('web.html', redDronesAlive=redDronesAlive.value, blueDronesAlive=blueDronesAlive.value, \
                            redBasesConquered = redBasesConquered.value, blueBasesConquered = blueBasesConquered.value,\
-                           winner = winner.value)
+                           winner = winner.value, initBasesPlaying=initBasesPlaying.value, initDronesPlaying=initDronesPlaying.value,\
+                           initRedBasesPlaying=initRedBasesPlaying.value, initBlueBasesPlaying=initBlueBasesPlaying.value,\
+                           initRedDronesPlaying=initRedDronesPlaying.value, initBlueDronesPlaying=initBlueDronesPlaying.value,\
+                           remainingDrones=remainingDrones)
 
 @app.route('/redteam')
 def redteam():
@@ -78,7 +88,7 @@ def test():
                            redBasesConquered=dicBaseLen, \
                            dicBase=dicBaseLocal, dicDrone=dicDroneLocal, dicBaseLen=dicBaseLen)
 
-def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase, dicDrone):
+def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase, dicDrone, initBasesPlaying, initRedBasesPlaying, initBlueBasesPlaying, initDronesPlaying, initRedDronesPlaying, initBlueDronesPlaying):
     #socket to comunicate with others
 
         sock = socket.socket()
@@ -200,6 +210,15 @@ def refreshData(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesCon
                             auxList = []
                             count = 0
                     dicBase[mlist[7]] = c.Base(mlist[7], mlist[8], int(mlist[9]), conqRecordTupleList)
+            else:
+                # msg: dredAlives, dblueAlives, bred, bblue, winner, fdrone, fbase, initDronesPlaying, initRedDronesPlaying,
+                # initBlueDronesPlaying, initBasesPlaying, initBlueBasesPlaying, initRedBasesPlaying
+                initDronesPlaying.value = int(mlist[7])
+                initRedDronesPlaying.value = int(mlist[8])
+                initBlueDronesPlaying.value = int(mlist[9])
+                initBasesPlaying.value = int(int(mlist[10]))
+                initBlueBasesPlaying.value = int(mlist[11])
+                initRedBasesPlaying.value = int(mlist[12])
             sock_c.close()
 def theShooter():
     ''' Search who are the best shooters'''
@@ -256,7 +275,9 @@ if __name__ == '__main__':
     dicDrone = manager.dict()
     dicBase = manager.dict()
 
-    p = Process(target=refreshData, args=(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, dicBase, dicDrone))
+    p = Process(target=refreshData, args=(redDronesAlive, blueDronesAlive, redBasesConquered, blueBasesConquered, winner, \
+                                          dicBase, dicDrone, initBasesPlaying, initRedBasesPlaying, initBlueBasesPlaying, \
+                                          initDronesPlaying, initRedDronesPlaying, initBlueDronesPlaying))
     p.start()
     app.run(host="0.0.0.0", debug=False, port=80)
 
