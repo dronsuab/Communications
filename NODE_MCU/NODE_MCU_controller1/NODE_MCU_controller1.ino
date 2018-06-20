@@ -5,10 +5,10 @@
 #define STATIC_IP_OPTION 0
 #define N_ToSubs 3
 
-char* WIFI_NAME = "Marc"; 
-char* PASSWORD = "nicedaytoday";
+char* WIFI_NAME = "Drones"; 
+char* PASSWORD = "dronesdrones";
 
-char* mqtt_server = "172.20.10.9";
+char* mqtt_server = "192.168.1.103";
 String myself = "controller1";
 String myteam = "blue";
 String mydrone = "drone1";
@@ -70,6 +70,8 @@ void callback(char* topic, byte* payload, unsigned int length){
     if(dest == myself){
       Spayload += '/';
       Serial.print(Spayload);
+      pinMode(5, OUTPUT);
+      digitalWrite(5, HIGH);
     }
   }
   else if(Stopic == "DEAD"){

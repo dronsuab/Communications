@@ -10,10 +10,10 @@ char* PASSWORD = "84551542";*/
 //char* WIFI_NAME = "MOVISTAR_29B4";
 //char* PASSWORD = "keyG6QjfecD7TfpCtDbh";
 
-char* WIFI_NAME = "Marc"; 
-char* PASSWORD = "nicedaytoday";
+char* WIFI_NAME = "Drones"; 
+char* PASSWORD = "dronesdrones";
 
-char* mqtt_server = "172.20.10.9";
+char* mqtt_server = "192.168.1.103";
 String myself = "base1";
 String myteam = "blue";
 String ToSubs[] = {"CBASE","GOVER"};

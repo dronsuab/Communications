@@ -5,8 +5,8 @@
 #define STATIC_IP_OPTION 0
 #define N_ToSubs 4
 
-char* WIFI_NAME = "Marc"; 
-char* PASSWORD = "nicedaytoday";
+char* WIFI_NAME = "Drones"; 
+char* PASSWORD = "dronesdrones";
 
 char* mqtt_server = "172.20.10.2";
 String myself = "drone2";

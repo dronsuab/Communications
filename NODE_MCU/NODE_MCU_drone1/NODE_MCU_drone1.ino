@@ -10,10 +10,10 @@ char* PASSWORD = "84551542";*/
 //char* WIFI_NAME = "MOVISTAR_29B4";
 //char* PASSWORD = "keyG6QjfecD7TfpCtDbh";
 
-char* WIFI_NAME = "Marc"; 
-char* PASSWORD = "nicedaytoday";
+char* WIFI_NAME = "Drones"; 
+char* PASSWORD = "dronesdrones";
 
-char* mqtt_server = "172.20.10.9";
+char* mqtt_server = "192.168.1.103";
 String myself = "drone1";
 String mycontroller = "controller1";
 String myteam = "blue";
@@ -46,6 +46,8 @@ bool ConnectWifi(bool staticIP){
   Serial.print("Connected to: ");
   Serial.println(WIFI_NAME);
   Serial.print("IP ADDRESS: ");
+  Serial.print("NODE NAME: ");
+  Serial.print(myself);
   Serial.println(WiFi.localIP());
   if(WiFi.status() == WL_CONNECTED){
     digitalWrite(LED_BUILTIN, HIGH);
@@ -87,6 +89,7 @@ void callback(char* topic, byte* payload, unsigned int length){
       Spayload += myself;
       Spayload += '/';
       //only for testing
+      Serial.print(Spayload);
       pinMode(5, OUTPUT);
       digitalWrite(5, HIGH);
     }
@@ -127,6 +130,8 @@ void reconnect(){
 }
 void checkUart(){
   if(Serial.available() > 0){
+    pinMode(5, OUTPUT);
+    digitalWrite(5, HIGH);
     int pos = 0;
     String sending, Stopic, aux = "";
     while(aux.indexOf("/") == -1 ){
