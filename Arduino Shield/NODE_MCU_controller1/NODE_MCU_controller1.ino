@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h> 
+#include <SoftwareSerial.h>
 
 #define SERIAL_SPEED 115200
 #define STATIC_IP_OPTION 0
@@ -143,7 +144,7 @@ void checkUart(){
 }
 void setup() {
   // put your setup code here, to run once:
-  esp8266.begin()
+//  esp8266.begin();
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(SERIAL_SPEED);
   Serial.setTimeout(5);

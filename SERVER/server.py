@@ -267,36 +267,43 @@ def applyProtocol(tag,message):
         else:
             print "invalid message"
     if str(tag) == "CATCH":
-        #<CATCH,base,drone>
-        if len(msg) == 3:
+        #<CATCH,base,drone,id>
+        if len(msg) == 4:
             global bblue, bred
             if msg[1] in dicBase and msg[2] in dicDrone:
                 auxBase = dicBase[msg[1]]
                 auxDrone = dicDrone[msg[2]]
                 if not auxDrone.team == auxBase.team and not auxDrone.isDead():
                     #anwering
-                    actualTime = time.strftime("%H:%M:%S")
-                    auxBase.conqRecord += "," + actualTime +","+ auxDrone.team + "," + auxDrone.name
-                    auxDrone.basesCaught += 1
-                    auxDrone.basesCaughtRecord += "," + auxBase.name + "," + actualTime
-                    auxBase.timesConquered += 1
-                    auxBase.team = auxDrone.team
-                    tagtosend = "CBASE"
-                    msgtosend = tagtosend + "," + auxBase.name + "," + auxDrone.team
-                    sendMessage(tagtosend, msgtosend)
-                    if auxDrone.team == "blue":
-                        bblue += 1
-                        bred -= 1
-                    elif auxDrone.team == "red":
-                        bblue -= 1
-                        bred += 1
-                    if bblue == 0 or bred == 0:
-                        gameOver()
-                    try:
-                        updateWeb(0, 1, auxBase)
-                        updateWeb(1, 0, auxDrone)
-                    except:
-                        print("In CATCH, error in Update Web")
+                    if msg[3] == "irda":
+                        auxBase.irda = 1
+                    elif msg[3] == "rfid":
+                        auxBase.rfid = 1
+                    if auxBase.irda == 1 and auxBase.rfid == 1:
+                        auxBase.irda = 0
+                        auxBase.rfid = 0
+                        actualTime = time.strftime("%H:%M:%S")
+                        auxBase.conqRecord += "," + actualTime +","+ auxDrone.team + "," + auxDrone.name
+                        auxDrone.basesCaught += 1
+                        auxDrone.basesCaughtRecord += "," + auxBase.name + "," + actualTime
+                        auxBase.timesConquered += 1
+                        auxBase.team = auxDrone.team
+                        tagtosend = "CBASE"
+                        msgtosend = tagtosend + "," + auxBase.name + "," + auxDrone.team
+                        sendMessage(tagtosend, msgtosend)
+                        if auxDrone.team == "blue":
+                            bblue += 1
+                            bred -= 1
+                        elif auxDrone.team == "red":
+                            bblue -= 1
+                            bred += 1
+                        if bblue == 0 or bred == 0:
+                            gameOver()
+                        try:
+                            updateWeb(0, 1, auxBase)
+                            updateWeb(1, 0, auxDrone)
+                        except:
+                            print("In CATCH, error in Update Web")
 
             else:
                 sendMessage("Ginfo", "Err: CATCH from a not signed up dron or base")

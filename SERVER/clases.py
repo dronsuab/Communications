@@ -28,6 +28,8 @@ class Base:
         #list of (time, team, who)
         self.conqRecord = "no time," + team + ",no drone"
         self.timesConquered = 0
+        self.irda = 0
+        self.rfid = 0
 class Controller:
     def __init__(self, name, drone, team, right, left, forward, backward):
         self.name = name
